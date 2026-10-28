@@ -1,0 +1,32 @@
+MITOBREW - Instalar como app / generar APK
+==========================================
+
+Archivos: index.html, manifest.json, sw.js, icon-192.png, icon-512.png
+(deben quedar TODOS en la misma carpeta, sin subcarpetas)
+
+1) ALOJAR (necesita HTTPS)
+   Opción fácil: https://app.netlify.com/drop -> arrastra la carpeta descomprimida.
+   También sirve GitHub Pages. Obtendrás una URL https://...
+
+2) INSTALAR EN EL MÓVIL (sin APK)
+   Abre la URL en Chrome -> menú ⋮ -> "Instalar app". Funciona sin internet.
+
+3) GENERAR APK
+   a) Entra en https://www.pwabuilder.com
+   b) Pega tu URL -> Start
+   c) Package for stores -> Android -> Generate package
+   d) Descarga el .zip: dentro está el .apk (para instalar directo) y el .aab (Play Store)
+   e) Pasa el .apk al móvil y ábrelo (permite "instalar apps de orígenes desconocidos").
+
+Tus datos se guardan en el almacenamiento del navegador/app del dispositivo.
+
+ACTUALIZAR UNA VERSIÓN YA PUBLICADA (GitHub Pages)
+   Sustituye index.html y sw.js en tu repositorio por los nuevos (sube también el resto si quieres).
+   Espera ~1 minuto, abre la app y recárgala una vez para ver los cambios.
+
+NOVEDADES v3: cada registro tiene un campo "Observaciones" (también se ve en el historial y entra en la copia de seguridad).
+
+NOVEDADES v2
+   - Pestaña "Gráfica": densidad y temperatura del registro en curso.
+   - Historial > "Compartir copia de seguridad" (archivo .json por WhatsApp, Drive, correo...)
+     y "Restaurar desde archivo" para recuperar los datos en otro móvil.

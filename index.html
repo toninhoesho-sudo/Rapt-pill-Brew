@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c9801a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>MitoBrew · Diario de fermentación</title>
+<style>
+:root{--bg:#faf6ee;--card:#fff;--ink:#2b2118;--mut:#7a6b5a;--acc:#c9801a;--acc2:#8a5410;--line:#e8dfd0;--ok:#3d7a3a;--bad:#b3392b;--tc:#2f7fc4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1610;--card:#2a2118;--ink:#f3e9d8;--mut:#b3a58f;--acc:#e8a13c;--acc2:#f1be6e;--line:#3d3125;--ok:#7bc277;--bad:#e5806f;--tc:#6fb3ee}}
+:root[data-theme="dark"]{--bg:#1c1610;--card:#2a2118;--ink:#f3e9d8;--mut:#b3a58f;--acc:#e8a13c;--acc2:#f1be6e;--line:#3d3125;--ok:#7bc277;--bad:#e5806f;--tc:#6fb3ee}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:16px 16px 90px}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:14px}
+.tabs{display:flex;gap:6px;background:var(--line);padding:4px;border-radius:12px;margin-bottom:16px}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);padding:10px 4px;border-radius:9px;font-size:14px;font-weight:600}
+.tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px #0002}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--mut);margin:0 0 4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+input{width:100%;font-size:17px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus{outline:2px solid var(--acc);border-color:transparent}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.btn{width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;background:var(--acc);color:#fff}
+.btn.sec{background:none;border:1.5px solid var(--acc);color:var(--acc2)}
+.btn.danger{background:none;color:var(--bad);border:1px solid var(--line);padding:8px 12px;width:auto;font-size:13px}
+.title{width:100%;font-size:20px;font-weight:700;border:0;border-bottom:2px dashed var(--line);border-radius:0;padding:6px 0;background:none}
+.pill{display:inline-block;font-size:12px;padding:3px 9px;border-radius:99px;background:var(--line);color:var(--mut);font-weight:600}
+.pill.ok{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--acc) 22%,transparent);color:var(--acc2)}
+.ent{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ent:first-child{border-top:0}
+.ent .t{font-size:12px;color:var(--mut);min-width:84px}
+.ent .v{flex:1;font-size:16px;font-weight:600}
+.ent .v span{color:var(--mut);font-weight:400;font-size:13px}
+.x{border:0;background:none;color:var(--mut);font-size:20px;padding:4px 8px}
+.empty{text-align:center;color:var(--mut);padding:28px 10px;font-size:14px}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hrow b{font-size:16px}
+.meta{font-size:12px;color:var(--mut);margin-top:3px}
+.scroll{overflow-x:auto}
+.det{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}
+textarea{width:100%;font-size:16px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;resize:vertical}
+textarea:focus{outline:2px solid var(--acc);border-color:transparent}
+.notes{white-space:pre-wrap;word-break:break-word;font-size:14px;background:var(--bg);border-radius:10px;padding:10px;margin-top:10px}
+.ax{fill:var(--mut);font-size:10px}
+.gl{stroke:var(--line);stroke-width:1}
+.leg{display:flex;gap:14px;font-size:13px;color:var(--mut);margin-bottom:8px;flex-wrap:wrap}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.stats div{background:var(--bg);border-radius:10px;padding:8px;text-align:center}
+.stats b{display:block;font-size:16px}
+.stats span{font-size:11px;color:var(--mut)}
+.btn+.btn{margin-top:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<main>
+  <h1>🍺 MitoBrew</h1>
+  <div class="sub">Diario de fermentación</div>
+  <div class="tabs">
+    <button id="tA" class="on">Registro actual</button>
+    <button id="tG">Gráfica</button>
+    <button id="tH">Historial</button>
+  </div>
+  <section id="vA"></section>
+  <section id="vG" hidden></section>
+  <section id="vH" hidden></section>
+  <input type="file" id="fileIn" accept=".json,application/json" hidden>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+var KEY="mitobrew:v1",S={current:null,history:[]};
+function load(){try{var r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}if(!S.history)S.history=[]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function pad(n){return String(n).padStart(2,"0")}
+function localISO(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes())}
+function fmt(iso){var d=new Date(iso);return d.toLocaleDateString("es",{day:"2-digit",month:"short"})+" · "+pad(d.getHours())+":"+pad(d.getMinutes())}
+function dayKey(iso){return iso.slice(0,10)}
+function toast(m){var t=$("toast");t.textContent=m;t.className="toast show";setTimeout(function(){t.className="toast"},1800)}
+function newRec(){return{id:uid(),title:"",started:localISO(new Date()),entries:[]}}
+function todayCount(r){var k=localISO(new Date()).slice(0,10);return r.entries.filter(function(e){return dayKey(e.at)===k}).length}
+function entryRows(list,del){
+  if(!list.length)return '<div class="empty">Aún no hay lecturas.</div>';
+  return list.slice().sort(function(a,b){return a.at<b.at?1:-1}).map(function(e){
+    return '<div class="ent"><div class="t">'+fmt(e.at)+'</div><div class="v">'+Number(e.sg).toFixed(3)+' <span>SG</span> · '+Number(e.temp).toFixed(1)+' <span>°C</span></div>'+(del?'<button class="x" data-del="'+e.id+'" aria-label="Eliminar lectura">×</button>':'')+'</div>'}).join("")}
+function renderA(){
+  var r=S.current,c=todayCount(r),p=c>=2?'<span class="pill ok">Hoy: '+c+'/2 ✓</span>':'<span class="pill warn">Hoy: '+c+'/2 lecturas</span>';
+  var last=r.entries.length?r.entries.slice().sort(function(a,b){return a.at<b.at?1:-1})[0]:null;
+  $("vA").innerHTML=
+  '<div class="card"><label for="ti">Título del registro</label><input id="ti" class="title" placeholder="Ej: IPA lote 12" value="'+esc(r.title)+'"><div class="meta">Iniciado: '+fmt(r.started)+' &nbsp;'+p+'</div><label for="nt" style="margin-top:14px">Observaciones</label><textarea id="nt" rows="3" placeholder="Aroma, krausen, levadura, incidencias...">'+esc(r.notes||"")+'</textarea></div>'+
+  '<div class="card"><label>Nueva lectura</label><div class="row"><div><label for="sg" style="margin-top:8px">Densidad</label><input id="sg" type="number" inputmode="decimal" step="0.001" placeholder="1.050"></div><div><label for="tp" style="margin-top:8px">Temp. °C</label><input id="tp" type="number" inputmode="decimal" step="0.1" placeholder="19.0"></div></div>'+
+  '<div style="margin-bottom:12px"><label for="at">Fecha y hora</label><input id="at" type="datetime-local" value="'+localISO(new Date())+'"></div><button class="btn" id="add">Añadir lectura</button></div>'+
+  '<div class="card"><div class="hrow"><label style="margin:0">Lecturas ('+r.entries.length+')</label>'+(last?'<span class="pill">Última: '+Number(last.sg).toFixed(3)+'</span>':'')+'</div><div class="scroll">'+entryRows(r.entries,true)+'</div></div>'+
+  '<button class="btn sec" id="fin">Guardar registro y empezar uno nuevo</button>';
+  $("ti").oninput=function(){S.current.title=this.value;save()};
+  $("nt").oninput=function(){S.current.notes=this.value;save()};
+  $("add").onclick=addEntry;
+  $("fin").onclick=finish;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-del]"),function(b){b.onclick=function(){
+    S.current.entries=S.current.entries.filter(function(e){return e.id!==b.getAttribute("data-del")});save();renderA()}})}
+function addEntry(){
+  var sg=parseFloat($("sg").value),tp=parseFloat($("tp").value),at=$("at").value;
+  if(isNaN(sg)||sg<0.9||sg>1.3){toast("Densidad inválida (ej. 1.050)");return}
+  if(isNaN(tp)||tp<-5||tp>60){toast("Temperatura inválida");return}
+  if(!at){toast("Indica fecha y hora");return}
+  S.current.entries.push({id:uid(),at:at,sg:sg,temp:tp});save();renderA();toast("Lectura añadida")}
+function finish(){
+  var r=S.current;
+  if(!r.entries.length){toast("Añade al menos una lectura");return}
+  if(!r.title.trim())r.title="Registro "+fmt(r.started);
+  r.ended=localISO(new Date());
+  S.history.unshift(r);S.current=newRec();save();renderA();toast("Registro guardado");}
+function renderH(){
+  var bk=backupCard();if(!S.history.length){$("vH").innerHTML=bk+'<div class="empty">Tu historial está vacío.<br>Guarda un registro para verlo aquí.</div>';bindBk();return}
+  $("vH").innerHTML=bk+S.history.map(function(r,i){
+    var es=r.entries.slice().sort(function(a,b){return a.at<b.at?-1:1}),f=es[0],l=es[es.length-1];
+    var abv=(f&&l&&f!==l)?((f.sg-l.sg)*131.25).toFixed(1)+"% ABV aprox.":"";
+    return '<div class="card"><div class="hrow"><b>'+esc(r.title)+'</b><button class="btn danger" data-rm="'+i+'">Borrar</button></div>'+
+    '<div class="meta">'+fmt(r.started)+' → '+fmt(r.ended||r.started)+' · '+r.entries.length+' lecturas</div>'+
+    '<div class="meta">DI '+Number(f.sg).toFixed(3)+' → DF '+Number(l.sg).toFixed(3)+(abv?' · '+abv:'')+'</div>'+
+    (r.notes?'<div class="notes">'+esc(r.notes)+'</div>':'')+'<details class="det"><summary style="font-size:14px;color:var(--acc2);font-weight:600">Ver lecturas</summary><div class="scroll">'+entryRows(r.entries,false)+'</div></details></div>'}).join("");
+  bindBk();Array.prototype.forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){
+    if(confirm("¿Borrar este registro del historial?")){S.history.splice(+b.getAttribute("data-rm"),1);save();renderH()}}})}
+function tab(n){["vA","vG","vH"].forEach(function(id,i){$(id).hidden=i!==n});["tA","tG","tH"].forEach(function(id,i){$(id).className=i===n?"on":""});if(n===0)renderA();if(n===1)renderG();if(n===2)renderH()}
+$("tA").onclick=function(){tab(0)};$("tG").onclick=function(){tab(1)};$("tH").onclick=function(){tab(2)};
+
+function renderG(){
+  var r=S.current,es=r.entries.slice().sort(function(a,b){return a.at<b.at?-1:1});
+  var title=esc(r.title||"Registro en curso");
+  if(es.length<2){$("vG").innerHTML='<div class="card"><b>'+title+'</b><div class="empty">Añade al menos 2 lecturas en «Registro actual» para ver la gráfica.</div></div>';return}
+  var W=360,H=230,L=46,R=46,T=14,B=34,pw=W-L-R,ph=H-T-B;
+  var ts=es.map(function(e){return new Date(e.at).getTime()}),t0=ts[0],t1=ts[ts.length-1],dt=(t1-t0)||1;
+  var sgs=es.map(function(e){return +e.sg}),tps=es.map(function(e){return +e.temp});
+  var sMin=Math.min.apply(null,sgs)-0.002,sMax=Math.max.apply(null,sgs)+0.002;
+  var tMin=Math.min.apply(null,tps)-1,tMax=Math.max.apply(null,tps)+1;
+  function X(t){return L+(t-t0)/dt*pw}
+  function YS(v){return T+(1-(v-sMin)/(sMax-sMin))*ph}
+  function YT(v){return T+(1-(v-tMin)/(tMax-tMin))*ph}
+  var g="",i;
+  for(i=0;i<=4;i++){var y=T+ph*i/4;
+    g+='<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'"/>';
+    g+='<text class="ax" x="'+(L-6)+'" y="'+(y+3)+'" text-anchor="end">'+(sMax-(sMax-sMin)*i/4).toFixed(3)+'</text>';
+    g+='<text class="ax" x="'+(W-R+6)+'" y="'+(y+3)+'">'+(tMax-(tMax-tMin)*i/4).toFixed(1)+'</text>'}
+  function path(f,k){return es.map(function(e,j){return(j?"L":"M")+X(ts[j]).toFixed(1)+","+f(k[j]).toFixed(1)}).join(" ")}
+  g+='<path d="'+path(YS,sgs)+'" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linejoin="round"/>';
+  g+='<path d="'+path(YT,tps)+'" fill="none" stroke="var(--tc)" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="5 4"/>';
+  es.forEach(function(e,j){
+    g+='<circle cx="'+X(ts[j]).toFixed(1)+'" cy="'+YS(sgs[j]).toFixed(1)+'" r="3.5" fill="var(--acc)"/>';
+    g+='<circle cx="'+X(ts[j]).toFixed(1)+'" cy="'+YT(tps[j]).toFixed(1)+'" r="3" fill="var(--tc)"/>'});
+  var fd=function(t){var d=new Date(t);return pad(d.getDate())+"/"+pad(d.getMonth()+1)+" "+pad(d.getHours())+":"+pad(d.getMinutes())};
+  g+='<text class="ax" x="'+L+'" y="'+(H-10)+'">'+fd(t0)+'</text><text class="ax" x="'+(W-R)+'" y="'+(H-10)+'" text-anchor="end">'+fd(t1)+'</text>';
+  var di=sgs[0],df=sgs[sgs.length-1],abv=((di-df)*131.25).toFixed(1),att=di>1?Math.round((di-df)/(di-1)*100):0;
+  $("vG").innerHTML='<div class="card"><b>'+title+'</b><div class="meta" style="margin-bottom:10px">'+es.length+' lecturas · en curso</div>'+
+  '<div class="leg"><span><i style="background:var(--acc)"></i>Densidad (SG)</span><span><i style="background:var(--tc)"></i>Temperatura (°C)</span></div>'+
+  '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Gráfica de densidad y temperatura">'+g+'</svg>'+
+  '<div class="stats"><div><b>'+df.toFixed(3)+'</b><span>Densidad actual</span></div><div><b>'+tps[tps.length-1].toFixed(1)+' °C</b><span>Temp. actual</span></div><div><b>'+abv+'%</b><span>ABV aprox. · atenuación '+att+'%</span></div></div></div>'}
+
+function backupCard(){return '<div class="card"><label>Copia de seguridad</label><div class="meta" style="margin:0 0 10px">Guarda o comparte todos tus registros en un archivo.</div><button class="btn" id="bkShare">Compartir copia de seguridad</button><button class="btn sec" id="bkRestore">Restaurar desde archivo</button></div>'}
+function bindBk(){$("bkShare").onclick=doBackup;$("bkRestore").onclick=function(){$("fileIn").click()}}
+function doBackup(){
+  var name="mitobrew-"+localISO(new Date()).slice(0,10)+".json";
+  var json=JSON.stringify({app:"mitobrew",version:1,exported:new Date().toISOString(),data:S},null,2);
+  var blob=new Blob([json],{type:"application/json"}),file=null;
+  try{file=new File([blob],name,{type:"application/json"})}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:"Copia MitoBrew"}).catch(function(){});return}
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast("Copia descargada")}
+$("fileIn").onchange=function(){
+  var f=this.files[0];this.value="";if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){try{
+    var o=JSON.parse(rd.result),d=o&&o.data;
+    if(!d||!Array.isArray(d.history)||!d.current)throw 0;
+    if(!confirm("Se reemplazarán tus datos actuales por los de la copia. ¿Continuar?"))return;
+    S=d;save();tab(2);toast("Copia restaurada")}catch(e){toast("Archivo no válido")}};
+  rd.readAsText(f)};
+
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+load();if(!S.current)S.current=newRec();save();renderA();
+</script>
+</body>
+</html>

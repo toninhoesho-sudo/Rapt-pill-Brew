@@ -1,0 +1,17 @@
+{
+  "name": "MitoBrew · Diario de fermentación",
+  "short_name": "MitoBrew",
+  "description": "Registra densidad, temperatura y hora de la fermentación de tu cerveza.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es",
+  "background_color": "#faf6ee",
+  "theme_color": "#c9801a",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
