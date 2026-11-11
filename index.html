@@ -45,9 +45,6 @@ input:focus{outline:2px solid var(--acc);border-color:transparent}
 .meta{font-size:12px;color:var(--mut);margin-top:3px}
 .scroll{overflow-x:auto}
 .det{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}
-textarea{width:100%;font-size:16px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;resize:vertical}
-textarea:focus{outline:2px solid var(--acc);border-color:transparent}
-.notes{white-space:pre-wrap;word-break:break-word;font-size:14px;background:var(--bg);border-radius:10px;padding:10px;margin-top:10px}
 .ax{fill:var(--mut);font-size:10px}
 .gl{stroke:var(--line);stroke-width:1}
 .leg{display:flex;gap:14px;font-size:13px;color:var(--mut);margin-bottom:8px;flex-wrap:wrap}
@@ -57,6 +54,9 @@ textarea:focus{outline:2px solid var(--acc);border-color:transparent}
 .stats b{display:block;font-size:16px}
 .stats span{font-size:11px;color:var(--mut)}
 .btn+.btn{margin-top:8px}
+textarea{width:100%;font-size:16px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:inherit;resize:vertical}
+textarea:focus{outline:2px solid var(--acc);border-color:transparent}
+.notes{white-space:pre-wrap;word-break:break-word;font-size:14px;background:var(--bg);border-radius:10px;padding:10px;margin-top:10px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none}
 .toast.show{opacity:1}
 </style>
@@ -129,16 +129,14 @@ function renderH(){
     return '<div class="card"><div class="hrow"><b>'+esc(r.title)+'</b><button class="btn danger" data-rm="'+i+'">Borrar</button></div>'+
     '<div class="meta">'+fmt(r.started)+' → '+fmt(r.ended||r.started)+' · '+r.entries.length+' lecturas</div>'+
     '<div class="meta">DI '+Number(f.sg).toFixed(3)+' → DF '+Number(l.sg).toFixed(3)+(abv?' · '+abv:'')+'</div>'+
-    (r.notes?'<div class="notes">'+esc(r.notes)+'</div>':'')+'<details class="det"><summary style="font-size:14px;color:var(--acc2);font-weight:600">Ver lecturas</summary><div class="scroll">'+entryRows(r.entries,false)+'</div></details></div>'}).join("");
+    (r.notes?'<div class="notes">'+esc(r.notes)+'</div>':'')+'<details class="det"><summary style="font-size:14px;color:var(--acc2);font-weight:600">Ver gráfica y lecturas</summary>'+(r.entries.length>1?'<div style="margin-top:10px">'+chartBlock(r.entries)+'</div>':'')+'<div class="scroll">'+entryRows(r.entries,false)+'</div></details></div>'}).join("");
   bindBk();Array.prototype.forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){
     if(confirm("¿Borrar este registro del historial?")){S.history.splice(+b.getAttribute("data-rm"),1);save();renderH()}}})}
 function tab(n){["vA","vG","vH"].forEach(function(id,i){$(id).hidden=i!==n});["tA","tG","tH"].forEach(function(id,i){$(id).className=i===n?"on":""});if(n===0)renderA();if(n===1)renderG();if(n===2)renderH()}
 $("tA").onclick=function(){tab(0)};$("tG").onclick=function(){tab(1)};$("tH").onclick=function(){tab(2)};
 
-function renderG(){
-  var r=S.current,es=r.entries.slice().sort(function(a,b){return a.at<b.at?-1:1});
-  var title=esc(r.title||"Registro en curso");
-  if(es.length<2){$("vG").innerHTML='<div class="card"><b>'+title+'</b><div class="empty">Añade al menos 2 lecturas en «Registro actual» para ver la gráfica.</div></div>';return}
+function chartBlock(list){
+  var es=list.slice().sort(function(a,b){return a.at<b.at?-1:1});
   var W=360,H=230,L=46,R=46,T=14,B=34,pw=W-L-R,ph=H-T-B;
   var ts=es.map(function(e){return new Date(e.at).getTime()}),t0=ts[0],t1=ts[ts.length-1],dt=(t1-t0)||1;
   var sgs=es.map(function(e){return +e.sg}),tps=es.map(function(e){return +e.temp});
@@ -161,10 +159,13 @@ function renderG(){
   var fd=function(t){var d=new Date(t);return pad(d.getDate())+"/"+pad(d.getMonth()+1)+" "+pad(d.getHours())+":"+pad(d.getMinutes())};
   g+='<text class="ax" x="'+L+'" y="'+(H-10)+'">'+fd(t0)+'</text><text class="ax" x="'+(W-R)+'" y="'+(H-10)+'" text-anchor="end">'+fd(t1)+'</text>';
   var di=sgs[0],df=sgs[sgs.length-1],abv=((di-df)*131.25).toFixed(1),att=di>1?Math.round((di-df)/(di-1)*100):0;
-  $("vG").innerHTML='<div class="card"><b>'+title+'</b><div class="meta" style="margin-bottom:10px">'+es.length+' lecturas · en curso</div>'+
-  '<div class="leg"><span><i style="background:var(--acc)"></i>Densidad (SG)</span><span><i style="background:var(--tc)"></i>Temperatura (°C)</span></div>'+
+  return '<div class="leg"><span><i style="background:var(--acc)"></i>Densidad (SG)</span><span><i style="background:var(--tc)"></i>Temperatura (°C)</span></div>'+
   '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Gráfica de densidad y temperatura">'+g+'</svg>'+
-  '<div class="stats"><div><b>'+df.toFixed(3)+'</b><span>Densidad actual</span></div><div><b>'+tps[tps.length-1].toFixed(1)+' °C</b><span>Temp. actual</span></div><div><b>'+abv+'%</b><span>ABV aprox. · atenuación '+att+'%</span></div></div></div>'}
+  '<div class="stats"><div><b>'+df.toFixed(3)+'</b><span>Densidad final</span></div><div><b>'+tps[tps.length-1].toFixed(1)+' °C</b><span>Última temp.</span></div><div><b>'+abv+'%</b><span>ABV aprox. · atenuación '+att+'%</span></div></div>'}
+function renderG(){
+  var r=S.current,title=esc(r.title||"Registro en curso");
+  if(r.entries.length<2){$("vG").innerHTML='<div class="card"><b>'+title+'</b><div class="empty">Añade al menos 2 lecturas en «Registro actual» para ver la gráfica.</div></div>';return}
+  $("vG").innerHTML='<div class="card"><b>'+title+'</b><div class="meta" style="margin-bottom:10px">'+r.entries.length+' lecturas · en curso</div>'+chartBlock(r.entries)+'</div>'}
 
 function backupCard(){return '<div class="card"><label>Copia de seguridad</label><div class="meta" style="margin:0 0 10px">Guarda o comparte todos tus registros en un archivo.</div><button class="btn" id="bkShare">Compartir copia de seguridad</button><button class="btn sec" id="bkRestore">Restaurar desde archivo</button></div>'}
 function bindBk(){$("bkShare").onclick=doBackup;$("bkRestore").onclick=function(){$("fileIn").click()}}
@@ -184,7 +185,6 @@ $("fileIn").onchange=function(){
     if(!confirm("Se reemplazarán tus datos actuales por los de la copia. ¿Continuar?"))return;
     S=d;save();tab(2);toast("Copia restaurada")}catch(e){toast("Archivo no válido")}};
   rd.readAsText(f)};
-
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
 load();if(!S.current)S.current=newRec();save();renderA();
 </script>
